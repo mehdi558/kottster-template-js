@@ -9,9 +9,6 @@ services:
     networks:
       - ingress-network
 
-    # Commande exécutée au démarrage
-    entrypoint: ["/bin/sh", "-c", "/prod.sh && tail -f /dev/null"]
-
     environment:
       - PORT=5480
       - VITE_DOCKER_MODE=true
