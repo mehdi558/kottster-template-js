@@ -13,8 +13,7 @@ services:
       - PORT=5480
       - VITE_DOCKER_MODE=true
 
-    volumes:
-      - ${APPDATA_PATH:? APPDATA_PATH is required}/kottster/node_modules:/app/node_modules
+    volumes: []
 
     labels:
       - "traefik.enable=true"
