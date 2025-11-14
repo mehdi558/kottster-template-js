@@ -1,28 +1,46 @@
+# --- BUILD STAGE ---
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Install git + tini
+RUN apk add --no-cache git
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy app source
+COPY . .
+
+# Build front + server
+RUN npm run build
+
+# --- RUNTIME STAGE ---
 FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy built app
+COPY --from=builder /app /app
 
-RUN apk add --no-cache git tini
+# Install tini
+RUN apk add --no-cache tini
 
-RUN npm install
-
+# Expose ports
 EXPOSE 5480 5481
 
+# Environment
+ENV PORT=5480
+ENV DEV_API_SERVER_PORT=5481
 ENV VITE_DOCKER_MODE=true
 
-# App server port
-ENV PORT=5480
-
-# Development API server port
-ENV DEV_API_SERVER_PORT=5481
-
+# Copy scripts
 COPY scripts/dev.sh /dev.sh
 COPY scripts/prod.sh /prod.sh
 RUN chmod +x /dev.sh /prod.sh
 
 ENTRYPOINT ["/sbin/tini", "--"]
 
-# This is a dummy command to keep the container running
-CMD ["tail", "-f", "/dev/null"]
+# Start production server
+CMD ["/prod.sh"]
