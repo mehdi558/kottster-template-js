@@ -43,4 +43,4 @@ RUN chmod +x /dev.sh /prod.sh
 ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start production server
-CMD ["/prod.sh"]
+CMD ["/dev.sh"]
